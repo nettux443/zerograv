@@ -480,7 +480,7 @@ while not done:
 
     for bullet in bullet_list:        
         # tidy up bullets that have left the screen
-        pygame.draw.circle(dark.image, TRANSPARENT, (bullet.rect.x, bullet.rect.y), 80)
+        pygame.draw.circle(dark.image, TRANSPARENT, (bullet.rect.x + 6, bullet.rect.y + 6), 80)
         if bullet.rect.y < -10 or bullet.rect.x < -200:
             bullet_list.remove(bullet)
         if bullet.rect.y > 490 or bullet.rect.x > 900:
