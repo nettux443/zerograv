@@ -150,7 +150,7 @@ class Wall(pygame.sprite.Sprite):
 
 class Dark(pygame.sprite.Sprite):
     def __init__(self, x, y):
-        image = pygame.Surface([640,480], pygame.SRCALPHA, 32)
+        image = pygame.Surface([1280,960], pygame.SRCALPHA, 32)
         image = image.convert_alpha()
         image.fill((0,0,0,255))
         self.x = x + 10
@@ -161,7 +161,7 @@ class Dark(pygame.sprite.Sprite):
         self.x = x
         self.y = y
         
-        image = pygame.Surface([640,480], pygame.SRCALPHA, 32)
+        image = pygame.Surface([1280,960], pygame.SRCALPHA, 32)
         image = image.convert_alpha()
         if not dead:
             image.fill((0,0,0,255))
