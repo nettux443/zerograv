@@ -251,7 +251,9 @@ pygame.mixer.init()
 font=pygame.font.Font(None,18)
 # Set the width and height of the screen [width, height]
 size = (640, 480)
-screen = pygame.display.set_mode(size)
+window = pygame.display.set_mode(size)
+
+screen = pygame.Surface(size)
 
 pygame.display.set_caption("0Game")
 
@@ -465,6 +467,7 @@ while not done:
 
 
     # clear the screen to white
+    window.fill(BLACK)
     screen.fill(GREY)
                 
     bullet_list.draw(screen)
@@ -487,6 +490,8 @@ while not done:
             bullet_list.remove(bullet)
 
     screen.blit(dark.image, (0, 0))
+    window_origin = ((320 - (me.rect.x + 10) ), (240 - (me.rect.y + 10)))
+    window.blit(screen, (window_origin))
     # update the screen
     pygame.display.flip()
 
