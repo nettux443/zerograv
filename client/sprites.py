@@ -165,11 +165,11 @@ class Dark(pygame.sprite.Sprite):
         image = image.convert_alpha()
         if not dead:
             image.fill((0,0,0,255))
+            self.x = x
+            self.y = y
+            pygame.draw.circle(image, TRANSPARENT, (self.x, self.y), 180)
         else:
             image.fill((0,0,0,128))
-        self.x = x
-        self.y = y
-        pygame.draw.circle(image, TRANSPARENT, (self.x, self.y), 180)
         self.image = image
             
         
