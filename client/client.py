@@ -476,7 +476,7 @@ while not done:
     for player_group in player_dict.values():
         if not player_group.sprite.dead:
             player_group.draw(screen)
-            screen.blit(font.render(player_group.sprite.name, 1,DARK_GREEN), (player_group.sprite.rect.x - 6, player_group.sprite.rect.y - 15))
+            screen.blit(font.render(player_group.sprite.name, 1,BLACK), (player_group.sprite.rect.x - 6, player_group.sprite.rect.y - 15))
 
     for bullet in bullet_list:        
         # tidy up bullets that have left the screen
