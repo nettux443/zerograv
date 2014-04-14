@@ -113,7 +113,7 @@ def getAimDir(keys):
             dir = "down"
     return dir
 
-def getServerData(me, keys, fire, laser_sound):
+def getServerData(me, fire, laser_sound):
     if me.dead:
         data = server.sendToServer({"x": 0, "y": 0, "shooting": "none", "token": token, "username": username, "action": "dead", "data": "none"})
     elif fire:
@@ -259,14 +259,10 @@ drawMap(wall_list)
 
 ticks_per_second = 30
 
-gun_cooldown_timer = 0
-gun_cooldown = 3 * ticks_per_second
 
 # -------- Main Program Loop -----------
 while not done:
     fire = False
-    if gun_cooldown_timer > 0:
-        gun_cooldown_timer -= 1        
     keys=pygame.key.get_pressed()  
     # --- Main event loop
     for event in pygame.event.get(): # User did something
@@ -344,7 +340,7 @@ while not done:
     me.firing = False
 
     # send me data to the server and get other client data
-    data = getServerData(me, keys, fire, laser_sound)
+    data = getServerData(me, fire, laser_sound)
 
     if data != "{}":
         # if we have data from the server ...
@@ -450,6 +446,8 @@ while not done:
             player_group.draw(screen)
             screen.blit(font.render(player_group.sprite.name, 1,BLACK), (player_group.sprite.rect.x - 6, player_group.sprite.rect.y - 15))
 
+
+
     for bullet in bullet_list:        
         # tidy up bullets that have left the screen
         pygame.draw.circle(dark.image, TRANSPARENT, (bullet.rect.x + 6, bullet.rect.y + 6), 80)
@@ -459,8 +457,17 @@ while not done:
             bullet_list.remove(bullet)
 
     screen.blit(dark.image, (0, 0))
+    
+    
     window_origin = ((320 - (me.rect.x + 10) ), (240 - (me.rect.y + 10)))
     window.blit(screen, (window_origin))
+    
+    if me.gun_cooldown_timer <= 0:
+        window.blit(font.render("Ready", 1,DARK_GREEN), (10, 10))
+        #Put a little light on hte screen
+    
+    
+    
     # update the screen
     pygame.display.flip()
 
