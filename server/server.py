@@ -20,13 +20,12 @@ def listenToClient(client, address, clients):
             if data:
 
                 data_dict = json.loads(data)
-                #print data_dict
                 output_data = ""
                 if data_dict['action'] == "handshake":
                     value = data_dict['username']
                     token = "%f" % (random.random())
-                    output_data = str(token)
-                    #print "%s connected with token: %s" % (value, token)
+                    output_data = token
+
                     clients[value] = {}
                     clients[value]['token'] = token
                     clients[value]['x'] = 0
@@ -35,8 +34,6 @@ def listenToClient(client, address, clients):
                     clients[value]['action'] = "none"
                 elif data_dict['username'] in clients and clients[data_dict['username']]['token'] == data_dict['token']:
                     # Authenticated
-
-                    pieces = data_dict['data'].split(' : ')
                     clients[data_dict['username']]['x'] = data_dict['x']
                     clients[data_dict['username']]['y'] = data_dict['y']
                     clients[data_dict['username']]['shooting'] = data_dict['shooting']
