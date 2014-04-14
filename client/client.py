@@ -84,35 +84,6 @@ def getDir(keys):
         else:
             dir = "down"
     return dir
-"""
-def getDir(keys):
-    dir = "still"
-    if keys[pygame.K_LEFT]:
-        dir = "left"
-    if keys[pygame.K_RIGHT]:
-        if dir == "left":
-            dir = "still"
-        else:
-            dir = "right"
-    if keys[pygame.K_UP]:
-        if dir == "left":
-            dir = "up-left"
-        elif dir == "right":
-            dir = "up-right"
-        else:
-            dir = "up"
-
-    if keys[pygame.K_DOWN]:
-        if dir == "left":
-            dir = "down-left"
-        elif dir == "right":
-            dir = "down-right"
-        elif dir == "up":
-            dir = "still"
-        else:
-            dir = "down"
-    return dir
-"""
 
 def getAimDir(keys):
     dir = "still"
@@ -179,7 +150,6 @@ def getServerData(me, keys, fire, laser_sound):
         data = server.sendToServer({"x": me.rect.x, "y": me.rect.y, "shooting": "none", "token": token, "username": username, "action": "none", "data": "none"})
     return data
 
-
 def drawMap(wall_list):
     # middle wall
     wall_list.add(sprites.Wall(315, 100, 10, 260))
@@ -229,7 +199,6 @@ def spawn(player):
         player.rect.x = 430
         player.rect.y = 170
         
-
 server_ip = raw_input("Server IP/hostname? ")
 server_port = raw_input("Server port? ")
 
