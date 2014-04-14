@@ -1,9 +1,12 @@
 import socket
 import json
+
 class server(object):
     def __init__(self, server_ip, server_port):
         self.ip = server_ip
         self.port = server_port
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.sock.connect((self.ip,int(self.port)))
         
     def handshake(self, username):
         token = self.sendToServer({"username": username, "action": "handshake"})
@@ -11,16 +14,11 @@ class server(object):
     
     
     def sendToServer(self, input_dict):
-        host = self.ip
-        port = int(self.port)
         size = 1024
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.connect((host,port))
-        s.send(json.dumps(input_dict))
-        data = s.recv(size)
-        s.close()
+        self.sock.send(json.dumps(input_dict))
+        data = self.sock.recv(size)
         return data
-    """
-    def getInbox(username, token):
-        return sendToServer({"username": username, "token": token, "data": "inbox", "action": "none"})
-    """
+
+    def close(self):
+        self.sock.close()
+        return True
