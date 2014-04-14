@@ -84,35 +84,7 @@ def getDir(keys):
         else:
             dir = "down"
     return dir
-"""
-def getDir(keys):
-    dir = "still"
-    if keys[pygame.K_LEFT]:
-        dir = "left"
-    if keys[pygame.K_RIGHT]:
-        if dir == "left":
-            dir = "still"
-        else:
-            dir = "right"
-    if keys[pygame.K_UP]:
-        if dir == "left":
-            dir = "up-left"
-        elif dir == "right":
-            dir = "up-right"
-        else:
-            dir = "up"
 
-    if keys[pygame.K_DOWN]:
-        if dir == "left":
-            dir = "down-left"
-        elif dir == "right":
-            dir = "down-right"
-        elif dir == "up":
-            dir = "still"
-        else:
-            dir = "down"
-    return dir
-"""
 
 def getAimDir(keys):
     dir = "still"
