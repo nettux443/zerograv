@@ -87,30 +87,14 @@ def getDir(keys):
 
 def getAimDir(keys):
     dir = "still"
+    if keys[pygame.K_s]:
+        dir = "down"
+    if keys[pygame.K_w]:
+        dir = "up"
     if keys[pygame.K_a]:
         dir = "left"
     if keys[pygame.K_d]:
-        if dir == "left":
-            dir = "still"
-        else:
-            dir = "right"
-    if keys[pygame.K_w]:
-        if dir == "left":
-            dir = "up-left"
-        elif dir == "right":
-            dir = "up-right"
-        else:
-            dir = "up"
-
-    if keys[pygame.K_s]:
-        if dir == "left":
-            dir = "down-left"
-        elif dir == "right":
-            dir = "down-right"
-        elif dir == "up":
-            dir = "still"
-        else:
-            dir = "down"
+        dir = "right"
     return dir
 
 def getServerData(me, fire, laser_sound):
