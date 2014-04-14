@@ -85,7 +85,6 @@ def getDir(keys):
             dir = "down"
     return dir
 
-
 def getAimDir(keys):
     dir = "still"
     if keys[pygame.K_a]:
@@ -151,7 +150,6 @@ def getServerData(me, keys, fire, laser_sound):
         data = server.sendToServer({"x": me.rect.x, "y": me.rect.y, "shooting": "none", "token": token, "username": username, "action": "none", "data": "none"})
     return data
 
-
 def drawMap(wall_list):
     # middle wall
     wall_list.add(sprites.Wall(315, 100, 10, 260))
@@ -201,7 +199,6 @@ def spawn(player):
         player.rect.x = 430
         player.rect.y = 170
         
-
 server_ip = raw_input("Server IP/hostname? ")
 server_port = raw_input("Server port? ")
 
