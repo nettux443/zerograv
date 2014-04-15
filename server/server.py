@@ -21,23 +21,23 @@ def listenToClient(client, address, clients):
 
                 data_dict = json.loads(data)
                 output_data = ""
-                if data_dict['action'] == "handshake":
-                    value = data_dict['username']
+                if data_dict['a'] == "handshake":
+                    value = data_dict['u']
                     token = "%f" % (random.random())
                     output_data = token
 
                     clients[value] = {}
-                    clients[value]['token'] = token
+                    clients[value]['t'] = token
                     clients[value]['x'] = 0
                     clients[value]['y'] = 0
-                    clients[value]['shooting'] = "none"
-                    clients[value]['action'] = "none"
-                elif data_dict['username'] in clients and clients[data_dict['username']]['token'] == data_dict['token']:
+                    clients[value]['s'] = "none"
+                    clients[value]['a'] = "none"
+                elif data_dict['u'] in clients and clients[data_dict['u']]['t'] == data_dict['t']:
                     # Authenticated
-                    clients[data_dict['username']]['x'] = data_dict['x']
-                    clients[data_dict['username']]['y'] = data_dict['y']
-                    clients[data_dict['username']]['shooting'] = data_dict['shooting']
-                    clients[data_dict['username']]['action'] = data_dict['action']
+                    clients[data_dict['u']]['x'] = data_dict['x']
+                    clients[data_dict['u']]['y'] = data_dict['y']
+                    clients[data_dict['u']]['s'] = data_dict['s']
+                    clients[data_dict['u']]['a'] = data_dict['a']
                     output_data = json.dumps(clients)
                 else:
                     output_data = "unknown"
