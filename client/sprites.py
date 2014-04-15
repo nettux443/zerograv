@@ -2,27 +2,15 @@ import pygame
 import nethelpers
 import sprites
 import json
+import colours
 from math import atan2, degrees, pi, sin, cos
 
 
-# colours
-BLACK    = (   0,   0,   0)
-GREY     = ( 128, 128, 128)
-WHITE    = ( 255, 255, 255)
-BLUE     = (   0,   0, 255)
-CYAN     = (   0, 255, 255)
-GREEN    = (   0, 255,   0)
-RED      = ( 255,   0,   0)
-PURPLE   = ( 128,   0, 128)
-PINK     = ( 255,   0, 255)
-ORANGE   = ( 255, 165,   0)
-YELLOW   = ( 255, 255,   0)
-TRANSPARENT = (0,0,0,0)
 
 
 class Bullet(pygame.sprite.Sprite):
     """ This class represents the bullet . """
-    def __init__(self, dir, x, y, colour = GREEN, owner = ""):
+    def __init__(self, dir, x, y, colour = colours.alpha.GREEN, owner = ""):
         # Call the parent class (Sprite) constructor
         pygame.sprite.Sprite.__init__(self)
 
@@ -47,28 +35,11 @@ class Bullet(pygame.sprite.Sprite):
             self.rect.y -= 20
         elif self.dir == "down":
             self.rect.y += 20
-        elif self.dir == "up-left":
-            self.rect.y -= 10
-            self.rect.x -= 10
-        elif self.dir == "up-right":
-            self.rect.y -= 10
-            self.rect.x += 10
-        elif self.dir == "down-left":
-            self.rect.y += 10
-            self.rect.x -= 10
-        elif self.dir == "down-right":
-            self.rect.y += 10
-            self.rect.x += 10
-
-
-
-
-
 
 class Player(pygame.sprite.Sprite):
     """ This class represents the Player. """
 
-    def __init__(self, x, y, name, colour=BLACK):
+    def __init__(self, x, y, name, colour=colours.alpha.BLACK):
         """ Set up the player on creation. """
         # Call the parent class (Sprite) constructor
         pygame.sprite.Sprite.__init__(self)
@@ -77,8 +48,6 @@ class Player(pygame.sprite.Sprite):
         self.colour = colour
         self.image.fill(self.colour)
         self.rect = self.image.get_rect()
-        self.last_x = x
-        self.last_y = y
         self.rect.x = x
         self.rect.y = y
         self.name = name
@@ -93,11 +62,16 @@ class Player(pygame.sprite.Sprite):
         self.gun_cooldown = 3 * 30
 
     def update(self):
+        # reduce the gun cooldown timer towards 0 by 1
         if self.gun_cooldown_timer > 0:
             self.gun_cooldown_timer -= 1
-        self.last_x = self.rect.x
-        self.last_y = self.rect.y
+        else:
+            # make sure we don't go negative!
+            self.gun_cooldown_timer = 0
+        # colour in
         self.image.fill(self.colour)
+        # update position based on self.dir
+        # TODO: DEGREEESSS!!!
         if self.dir != "still":
             self.look_dir = self.dir
             if self.dir == "left":
@@ -108,31 +82,16 @@ class Player(pygame.sprite.Sprite):
                 self.rect.y += 6
             elif self.dir == "up":
                 self.rect.y -= 6
-            elif self.dir == "up-left":
-                self.rect.y -= 4
-                self.rect.x -= 4
-            elif self.dir == "up-right":
-                self.rect.y -= 4
-                self.rect.x += 4
-            elif self.dir == "down-left":
-                self.rect.y += 4
-                self.rect.x -= 4
-            elif self.dir == "down-right":
-                self.rect.y += 4
-                self.rect.x += 4
-    
+
+        # die if off the screen
         if self.rect.x > 620:
             self.dead = True
-            #self.rect.x = 620
         if self.rect.x < 0:
             self.dead = True
-            #self.rect.x = 0
         if self.rect.y > 460:
             self.dead = True
-            #self.rect.y = 460
         if self.rect.y < 0:
             self.dead = True
-            #self.rect.y = 0
         
 class Wall(pygame.sprite.Sprite):
     """ Wall the player can run into. """
@@ -142,7 +101,7 @@ class Wall(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         # Make a blue wall, of the size specified in the parameters
         self.image = pygame.Surface([width, height])
-        self.image.fill(PURPLE)
+        self.image.fill(colours.alpha.PURPLE)
         # Make our top-left corner the passed-in location.
         self.rect = self.image.get_rect()
         self.rect.y = y
@@ -152,10 +111,10 @@ class Dark(pygame.sprite.Sprite):
     def __init__(self, x, y):
         image = pygame.Surface([1280,960], pygame.SRCALPHA, 32)
         image = image.convert_alpha()
-        image.fill((0,0,0,255))
+        image.fill(colours.alpha.BLACK)
         self.x = x + 10
         self.y = y + 10
-        pygame.draw.circle(image, TRANSPARENT, (self.x, self.y), 180)
+        pygame.draw.circle(image, colours.alpha.TRANSPARENT, (self.x, self.y), 180)
         self.image = image
     def update(self, x, y, dead = False):
         self.x = x
@@ -164,12 +123,12 @@ class Dark(pygame.sprite.Sprite):
         image = pygame.Surface([1280,960], pygame.SRCALPHA, 32)
         image = image.convert_alpha()
         if not dead:
-            image.fill((0,0,0,255))
+            image.fill(colours.alpha.BLACK)
             self.x = x + 10
             self.y = y + 10
-            pygame.draw.circle(image, TRANSPARENT, (self.x, self.y), 180)
+            pygame.draw.circle(image, colours.alpha.TRANSPARENT, (self.x, self.y), 180)
         else:
-            image.fill((0,0,0,128))
+            image.fill(colours.alpha.SEMI_TRANSPARENT)
         self.image = image
             
         
