@@ -2,27 +2,15 @@ import pygame
 import nethelpers
 import sprites
 import json
+import colours
 from math import atan2, degrees, pi, sin, cos
 
 
-# colours
-BLACK    = (   0,   0,   0, 255)
-GREY     = ( 128, 128, 128, 255)
-WHITE    = ( 255, 255, 255, 255)
-BLUE     = (   0,   0, 255, 255)
-CYAN     = (   0, 255, 255, 255)
-GREEN    = (   0, 255,   0, 255)
-RED      = ( 255,   0,   0, 255)
-PURPLE   = ( 128,   0, 128, 255)
-PINK     = ( 255,   0, 255, 255)
-ORANGE   = ( 255, 165,   0, 255)
-YELLOW   = ( 255, 255,   0, 255)
-TRANSPARENT = (0,0,0,0)
 
 
 class Bullet(pygame.sprite.Sprite):
     """ This class represents the bullet . """
-    def __init__(self, dir, x, y, colour = GREEN, owner = ""):
+    def __init__(self, dir, x, y, colour = colours.alpha.GREEN, owner = ""):
         # Call the parent class (Sprite) constructor
         pygame.sprite.Sprite.__init__(self)
 
@@ -51,7 +39,7 @@ class Bullet(pygame.sprite.Sprite):
 class Player(pygame.sprite.Sprite):
     """ This class represents the Player. """
 
-    def __init__(self, x, y, name, colour=BLACK):
+    def __init__(self, x, y, name, colour=colours.alpha.BLACK):
         """ Set up the player on creation. """
         # Call the parent class (Sprite) constructor
         pygame.sprite.Sprite.__init__(self)
@@ -113,7 +101,7 @@ class Wall(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         # Make a blue wall, of the size specified in the parameters
         self.image = pygame.Surface([width, height])
-        self.image.fill(PURPLE)
+        self.image.fill(colours.alpha.PURPLE)
         # Make our top-left corner the passed-in location.
         self.rect = self.image.get_rect()
         self.rect.y = y
@@ -123,10 +111,10 @@ class Dark(pygame.sprite.Sprite):
     def __init__(self, x, y):
         image = pygame.Surface([1280,960], pygame.SRCALPHA, 32)
         image = image.convert_alpha()
-        image.fill((0,0,0,255))
+        image.fill(colours.alpha.BLACK)
         self.x = x + 10
         self.y = y + 10
-        pygame.draw.circle(image, TRANSPARENT, (self.x, self.y), 180)
+        pygame.draw.circle(image, colours.alpha.TRANSPARENT, (self.x, self.y), 180)
         self.image = image
     def update(self, x, y, dead = False):
         self.x = x
@@ -135,12 +123,12 @@ class Dark(pygame.sprite.Sprite):
         image = pygame.Surface([1280,960], pygame.SRCALPHA, 32)
         image = image.convert_alpha()
         if not dead:
-            image.fill((0,0,0,255))
+            image.fill(colours.alpha.BLACK)
             self.x = x + 10
             self.y = y + 10
-            pygame.draw.circle(image, TRANSPARENT, (self.x, self.y), 180)
+            pygame.draw.circle(image, colours.alpha.TRANSPARENT, (self.x, self.y), 180)
         else:
-            image.fill((0,0,0,128))
+            image.fill(colours.alpha.SEMI_TRANSPARENT)
         self.image = image
             
         
