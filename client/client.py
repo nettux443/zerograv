@@ -130,7 +130,7 @@ def getServerData(me, laser_sound):
             elif me.aim_dir == "down":
                me.dir = "up"
             # send my location and the direction that I'm shooting in
-            data = server.sendToServer({"x": me.rect.x, "y": me.rect.y, "s": me.aim_dir, "t": token, "u": username, "a": "none"})
+        data = server.sendToServer({"x": me.rect.x, "y": me.rect.y, "s": me.aim_dir, "t": token, "u": username, "a": "none"})
     else:
         # not shooting so just send my position
         data = server.sendToServer({"x": me.rect.x, "y": me.rect.y, "s": "none", "t": token, "u": username, "a": "none"})

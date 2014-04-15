@@ -1,0 +1,24 @@
+ * implement degrees instead of direction strings
+
+ * implement rotation + gradually rotate when floating to land on feet
+
+ * rejig controls. Don't use space instead use arrows and c, v
+
+ * add bouncey grenades fired with the b key
+
+ * server side client command checking and correction (add movement direction to packets to check they look sane)
+
+ * move vector functions to their own module that can be imported from client and server
+   Use:
+   import os, sys
+   sys.path.append(os.path.abspath(os.path.join("..", "shared_modules")))
+
+ * change Player sprite image to a person not a block
+
+ * Make bullets longer in the direction that theyn are moving in (looks better and will improve collision detection)
+
+ * Use player colour for bullet colour
+
+ * Transmit chosen player colours over the network and to other clients
+
+ * Add a GUI menu on the client for setting name, colour and server with history and memory
