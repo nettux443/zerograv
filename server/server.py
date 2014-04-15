@@ -13,7 +13,6 @@ def listenForClients(sock):
         # wait for a new client
         # when a client connects create a socket for responding to it called client
         client, address = sock.accept()
-        print address
         # set the timeout to 5 seconds
         # If a client doesn't talk for 5 seconds it is deemed dead
         # and will be disconected
@@ -26,7 +25,6 @@ def listenToClient(client, address, clients):
     # set the buffer size for recieving data from the client
     size = 1024
     # start an infinite loop
-    print 'listening'
     while True:
         try:
             print 'in loop'
@@ -80,7 +78,6 @@ def listenToClient(client, address, clients):
                 raise error('Client disconnected')
         except:
             # if anything went wrong, cut off the client
-            print "disconnecting"
             client.close()
             
             # end the thread
