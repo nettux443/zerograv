@@ -9,7 +9,7 @@ class server(object):
         self.sock.connect((self.ip,int(self.port)))
         
     def handshake(self, username):
-        token = self.sendToServer({"username": username, "action": "handshake"})
+        token = self.sendToServer({"u": username, "a": "handshake"})
         return token
     
     

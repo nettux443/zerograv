@@ -47,6 +47,11 @@ def getPlayerByName(player_list, name):
             return player
     return False
 
+
+"""
+Takes two coordinates
+Returns the angle from the first to the second in degrees
+"""
 def vectDegs(x1,y1,x2,y2):
     dx = x2 - x1
     dy = y2 - y1
@@ -55,14 +60,16 @@ def vectDegs(x1,y1,x2,y2):
     degs = degrees(rads)
     return int(round(degs))
 
+"""
+Takes a start cooridinate and an angle.
+Returns the x and y deltas for a single step in the given angle
+"""
 def vectorStep(x0, y0, degs):
     theta = pi/6
     r = 1.0
     deltax = r*cos(theta)
     deltay = r*sin(theta)
-    x1 = x0 + deltax
-    y1 = y0 + deltay
-    return {"x": x1, "y": y1}
+    return {"x": deltax, "y": deltay}
 
 def getDir(keys):
     dir = "still"
@@ -99,13 +106,12 @@ def getAimDir(keys):
 
 def getServerData(me, fire, laser_sound):
     if me.dead:
-        data = server.sendToServer({"x": 0, "y": 0, "shooting": "none", "token": token, "username": username, "action": "dead", "data": "none"})
+        data = server.sendToServer({"x": 0, "y": 0, "s": "none", "t": token, "u": username, "a": "dead"})
     elif fire:
 
-        if not me.fired and me.gun_cooldown_timer <= 0:
+        if me.gun_cooldown_timer <= 0:
             me.gun_cooldown_timer = me.gun_cooldown
             me.firing = True
-            me.fired = True
             laser_sound.play()
             if not me.walled:
                 if me.aim_dir == "left":
@@ -126,12 +132,12 @@ def getServerData(me, fire, laser_sound):
                     me.dir = "down-left"
 
                     
-            data = server.sendToServer({"x": me.rect.x, "y": me.rect.y, "shooting": me.aim_dir, "token": token, "username": username, "action": "none", "data": "none"})
+            data = server.sendToServer({"x": me.rect.x, "y": me.rect.y, "s": me.aim_dir, "t": token, "u": username, "a": "none"})
         else:
-            data = server.sendToServer({"x": me.rect.x, "y": me.rect.y, "shooting": "none", "token": token, "username": username, "action": "none", "data": "none"})
+            data = server.sendToServer({"x": me.rect.x, "y": me.rect.y, "s": "none", "t": token, "u": username, "a": "none"})
     else:
         me.fired = False
-        data = server.sendToServer({"x": me.rect.x, "y": me.rect.y, "shooting": "none", "token": token, "username": username, "action": "none", "data": "none"})
+        data = server.sendToServer({"x": me.rect.x, "y": me.rect.y, "s": "none", "t": token, "u": username, "a": "none"})
     return data
 
 def drawMap(wall_list):
@@ -182,14 +188,16 @@ def spawn(player):
     else:
         player.rect.x = 430
         player.rect.y = 170
+
+
+
+
+# TODO: Add GUI menus for player name and server ip:port
         
 server_ip = raw_input("Server IP/hostname? ")
 server_port = raw_input("Server port? ")
-
 server = nethelpers.server(server_ip, server_port)
-
 username = raw_input("Username? ")
-
 while True:
     colour = raw_input("Colour? ")
     colour = colour.strip().lower()
@@ -197,6 +205,8 @@ while True:
     if player_colour != False:
         break
     print "Choose: yellow, orange, pink, blue, red, cyan or green."
+
+
     
 pygame.mixer.pre_init(44100, -16, 1, 512)
 pygame.init()
@@ -216,7 +226,6 @@ done = False
 # Used to manage how fast the screen updates
 clock = pygame.time.Clock()
 
-
 # Hide the mouse cursor
 pygame.mouse.set_visible(0)
 look_dir = "right"
@@ -227,22 +236,16 @@ me = sprites.Player(0 , 0, username, player_colour)
 spawn(me)
 dark = sprites.Dark(me.rect.x, me.rect.y)
 player_list.add(me)
-player_names = []
-player_names.append(username)
 dead = False
 laser_sound = pygame.mixer.Sound(os.path.join("sounds", "laser.ogg"))
 player_dict = {}
 player_dict[username] = pygame.sprite.GroupSingle(me)
 wall_list = pygame.sprite.Group()
 
-
+# TODO: add choice of maps here..
 drawMap(wall_list)
 
-
-
-
 ticks_per_second = 30
-
 
 # -------- Main Program Loop -----------
 while not done:
@@ -309,69 +312,55 @@ while not done:
                     me.rect.y = hit.rect.top - 20
                 else:
                     me.rect.x = hit.rect.right
-        
 
-
-
-                    
     bullet_list.update()
 
     dark.update(me.rect.x, me.rect.y, me.dead)
-
-        
-        
 
     me.firing = False
 
     # send me data to the server and get other client data
     data = getServerData(me, fire, laser_sound)
 
-    if data != "{}":
+    if data:
         # if we have data from the server ...
         data = json.loads(data)
 
         # handle new players
         for peer in data.keys():
             # update our list of players with any new additions
-            if not peer in player_names:
-                """ new player!!! """
-                player_names.append(peer)
+            if not peer in player_dict.keys():
+                # new player
                 new_player=sprites.Player(data[peer]['x'], data[peer]['y'], peer)
                 player_list.add(new_player)
                 player_dict.update({peer: pygame.sprite.GroupSingle(new_player)})
 
-        # process player position and death
+        # process player actions and death
         for player in player_list:
             if player.name in data.keys():
                 data_entry = data[player.name]
-                if data_entry['action'] == 'dead':
+                if data_entry['a'] == 'dead':
                     player.dead = True
                 else:
                     player.dead = False
                     if player.name != me.name:
                         player.rect.x = data_entry['x']
                         player.rect.y = data_entry['y']
-                    
-                    
-
-        # proccess player shooting
-        for player in player_list:
-            if data[player.name]['shooting'] != 'none':
-                player.firing = True
-                if player.name !=  me.name:
-                    laser_sound.play()
-                if data[player.name]['shooting'] == "up-left":
-                    bullet_list.add(sprites.Bullet(data[player.name]['shooting'], data[player.name]['x'] + 10 - 10, data[player.name]['y'] + 10 - 10))
-                elif data[player.name]['shooting'] == "down-left":
-                    bullet_list.add(sprites.Bullet(data[player.name]['shooting'], data[player.name]['x'] + 10 - 10, data[player.name]['y'] + 10 + 10))
-                elif data[player.name]['shooting'] == "up-right":
-                    bullet_list.add(sprites.Bullet(data[player.name]['shooting'], data[player.name]['x'] + 10 + 10, data[player.name]['y'] + 10 - 10))
-                elif data[player.name]['shooting'] == "down-right":
-                    bullet_list.add(sprites.Bullet(data[player.name]['shooting'], data[player.name]['x'] + 10 + 10, data[player.name]['y'] + 10 + 10))
-                else:
-                    bullet_list.add(sprites.Bullet(data[player.name]['shooting'], data[player.name]['x'] + 10, data[player.name]['y'] + 10))
-
-
+                    if data[player.name]['s'] != 'none':
+                        # player shoots
+                        player.firing = True
+                        if player.name !=  me.name:
+                            laser_sound.play()
+                        if data[player.name]['s'] == "up-left":
+                            bullet_list.add(sprites.Bullet(data[player.name]['s'], data[player.name]['x'] + 10 - 10, data[player.name]['y'] + 10 - 10))
+                        elif data[player.name]['s'] == "down-left":
+                            bullet_list.add(sprites.Bullet(data[player.name]['s'], data[player.name]['x'] + 10 - 10, data[player.name]['y'] + 10 + 10))
+                        elif data[player.name]['s'] == "up-right":
+                            bullet_list.add(sprites.Bullet(data[player.name]['s'], data[player.name]['x'] + 10 + 10, data[player.name]['y'] + 10 - 10))
+                        elif data[player.name]['s'] == "down-right":
+                            bullet_list.add(sprites.Bullet(data[player.name]['s'], data[player.name]['x'] + 10 + 10, data[player.name]['y'] + 10 + 10))
+                        else:
+                            bullet_list.add(sprites.Bullet(data[player.name]['s'], data[player.name]['x'] + 10, data[player.name]['y'] + 10))
 
     # get number of living players
     living_count = 0
@@ -379,30 +368,23 @@ while not done:
         if not player.dead:
             living_count += 1
 
-
     if me.dead and living_count < 2:
         # respawn if I'm dead and less than two others are alive
         player_list.add(me)
         spawn(me)
 
-
     pygame.sprite.groupcollide(bullet_list, wall_list, True, False)
 
-    hit_list = pygame.sprite.spritecollide(me, bullet_list, True)
+    # detect when I'm hit but don't remove the bullet
+    hit_list = pygame.sprite.spritecollide(me, bullet_list, False)
     if len(hit_list) > 0:
         for hit in hit_list:
             # me was hit!
             me.dead = True
             bullet_list.remove(hit)
 
-
-
-
-
     # ^^^ Game logic should go above
     # vvv Drawing code should go below
-
-
 
     # at this point we expect
     """
@@ -413,8 +395,6 @@ while not done:
     all bullet sprites in bullet_list with correct .rect.x and y attributes
     """
 
-
-
     # clear the screen to white
     window.fill(BLACK)
     screen.fill(GREY)
@@ -422,15 +402,12 @@ while not done:
     bullet_list.draw(screen)
 
     wall_list.draw(screen)
-
         
     # draw each player that isn't dead
     for player_group in player_dict.values():
         if not player_group.sprite.dead:
             player_group.draw(screen)
             screen.blit(font.render(player_group.sprite.name, 1,BLACK), (player_group.sprite.rect.x - 6, player_group.sprite.rect.y - 15))
-
-
 
     for bullet in bullet_list:        
         # tidy up bullets that have left the screen
@@ -442,15 +419,12 @@ while not done:
 
     screen.blit(dark.image, (0, 0))
     
-    
     window_origin = ((320 - (me.rect.x + 10) ), (240 - (me.rect.y + 10)))
     window.blit(screen, (window_origin))
     
     if me.gun_cooldown_timer <= 0:
+        # print ready in top left corner when we can fire
         window.blit(font.render("Ready", 1,DARK_GREEN), (10, 10))
-        #Put a little light on hte screen
-    
-    
     
     # update the screen
     pygame.display.flip()
