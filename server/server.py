@@ -13,6 +13,7 @@ def listenForClients(sock):
         # wait for a new client
         # when a client connects create a socket for responding to it called client
         client, address = sock.accept()
+        print address
         # set the timeout to 5 seconds
         # If a client doesn't talk for 5 seconds it is deemed dead
         # and will be disconected
@@ -25,13 +26,17 @@ def listenToClient(client, address, clients):
     # set the buffer size for recieving data from the client
     size = 1024
     # start an infinite loop
+    print 'listening'
     while True:
         try:
+            print 'in loop'
             # get/wait for data from the client
             data = client.recv(size)
+            
             if data:
                 # data should be a json string so convert it to a dictionary
                 data_dict = json.loads(data)
+                print data
                 # initialize output_data to an empty string
                 output_data = ""
                 # if the client is asking for a handshake check that it is
@@ -42,13 +47,13 @@ def listenToClient(client, address, clients):
                     output_data = token
                     
                     # initialize
-                    clients[value] = {}
+                    clients[data_dict['u']] = {}
                     # bind the generated token to the client
-                    clients[value]['t'] = token
-                    clients[value]['x'] = 0
-                    clients[value]['y'] = 0
-                    clients[value]['s'] = "none"
-                    clients[value]['a'] = "none"
+                    clients[data_dict['u']]['t'] = token
+                    clients[data_dict['u']]['x'] = 0
+                    clients[data_dict['u']]['y'] = 0
+                    clients[data_dict['u']]['s'] = "none"
+                    clients[data_dict['u']]['a'] = "none"
 
                 elif data_dict['u'] in clients and clients[data_dict['u']]['t'] == data_dict['t']:
                     # Authenticated user with token
@@ -63,7 +68,8 @@ def listenToClient(client, address, clients):
                 else:
                     # we didn't get data, probably because sock.recv
                     # timed out so raise an error to disconnect the client
-                    raise error('Client disconnected')
+                    # raise error('Client disconnected')
+                    print 'Client disconnected'
                 # debugging
                 print output_data
                 # send response to the client
@@ -74,7 +80,9 @@ def listenToClient(client, address, clients):
                 raise error('Client disconnected')
         except:
             # if anything went wrong, cut off the client
+            print "disconnecting"
             client.close()
+            
             # end the thread
             return False
 
