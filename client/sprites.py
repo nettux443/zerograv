@@ -47,23 +47,6 @@ class Bullet(pygame.sprite.Sprite):
             self.rect.y -= 20
         elif self.dir == "down":
             self.rect.y += 20
-        elif self.dir == "up-left":
-            self.rect.y -= 10
-            self.rect.x -= 10
-        elif self.dir == "up-right":
-            self.rect.y -= 10
-            self.rect.x += 10
-        elif self.dir == "down-left":
-            self.rect.y += 10
-            self.rect.x -= 10
-        elif self.dir == "down-right":
-            self.rect.y += 10
-            self.rect.x += 10
-
-
-
-
-
 
 class Player(pygame.sprite.Sprite):
     """ This class represents the Player. """
@@ -77,8 +60,6 @@ class Player(pygame.sprite.Sprite):
         self.colour = colour
         self.image.fill(self.colour)
         self.rect = self.image.get_rect()
-        self.last_x = x
-        self.last_y = y
         self.rect.x = x
         self.rect.y = y
         self.name = name
@@ -93,11 +74,16 @@ class Player(pygame.sprite.Sprite):
         self.gun_cooldown = 3 * 30
 
     def update(self):
+        # reduce the gun cooldown timer towards 0 by 1
         if self.gun_cooldown_timer > 0:
             self.gun_cooldown_timer -= 1
-        self.last_x = self.rect.x
-        self.last_y = self.rect.y
+        else:
+            # make sure we don't go negative!
+            self.gun_cooldown_timer = 0
+        # colour in
         self.image.fill(self.colour)
+        # update position based on self.dir
+        # TODO: DEGREEESSS!!!
         if self.dir != "still":
             self.look_dir = self.dir
             if self.dir == "left":
@@ -108,31 +94,16 @@ class Player(pygame.sprite.Sprite):
                 self.rect.y += 6
             elif self.dir == "up":
                 self.rect.y -= 6
-            elif self.dir == "up-left":
-                self.rect.y -= 4
-                self.rect.x -= 4
-            elif self.dir == "up-right":
-                self.rect.y -= 4
-                self.rect.x += 4
-            elif self.dir == "down-left":
-                self.rect.y += 4
-                self.rect.x -= 4
-            elif self.dir == "down-right":
-                self.rect.y += 4
-                self.rect.x += 4
-    
+
+        # die if off the screen
         if self.rect.x > 620:
             self.dead = True
-            #self.rect.x = 620
         if self.rect.x < 0:
             self.dead = True
-            #self.rect.x = 0
         if self.rect.y > 460:
             self.dead = True
-            #self.rect.y = 460
         if self.rect.y < 0:
             self.dead = True
-            #self.rect.y = 0
         
 class Wall(pygame.sprite.Sprite):
     """ Wall the player can run into. """
