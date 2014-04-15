@@ -1,9 +1,12 @@
 #!/usr/bin/python
+import os, sys
+sys.path.append(os.path.abspath(os.path.join("..", "shared_modules")))
 
 import socket
 import threading
 import json
 import random
+import vectors
 
 def listenForClients(sock):
     # create an empty dictionary of clients
