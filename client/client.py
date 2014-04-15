@@ -24,6 +24,10 @@ ORANGE   = ( 255, 165,   0)
 YELLOW   = ( 255, 255,   0)
 TRANSPARENT = (0,0,0,0)
 
+"""
+Takes a colour string
+returns the corresnponding colour constant
+"""
 def colourize(colour_string):
     if colour == "yellow":
         return  YELLOW
@@ -39,14 +43,8 @@ def colourize(colour_string):
         return  PINK
     elif colour == "green":
         return  GREEN
+    # the given colour couldn't be matched
     return False
-
-def getPlayerByName(player_list, name):
-    for player in player_list:
-        if player.name == name:
-            return player
-    return False
-
 
 """
 Takes two coordinates
@@ -71,11 +69,19 @@ def vectorStep(x0, y0, degs):
     deltay = r*sin(theta)
     return {"x": deltax, "y": deltay}
 
+"""
+Takes an array of keys
+Returns a direction for movement as a string
+TODO: use degrees here!!
+"""
 def getDir(keys):
+    # assume that we aren't moving to begin with
     dir = "still"
+    # if we are press an arrow key, move that way
     if keys[pygame.K_LEFT]:
         dir = "left"
     if keys[pygame.K_RIGHT]:
+        # if we are press right and left just stay still
         if dir == "left":
             dir = "still"
         else:
@@ -92,7 +98,13 @@ def getDir(keys):
             dir = "down"
     return dir
 
+"""
+Takes a list of currently pressed keys
+Returns a direction string for aim direction based on the keys
+TODO: use degress here!!!!!
+"""
 def getAimDir(keys):
+    # initialise to still
     dir = "still"
     if keys[pygame.K_s]:
         dir = "down"
@@ -104,38 +116,39 @@ def getAimDir(keys):
         dir = "right"
     return dir
 
+
+
+"""
+Converse with the server
+takes the player's sprite object, a boolean for whether or not they have fired
+(TODO: use me.firing instead of fire) and a sound object to play when firing
+returns info on all other clients from the server
+"""
 def getServerData(me, fire, laser_sound):
+    # if dead just send the dead action and put you at (0, 0)
     if me.dead:
         data = server.sendToServer({"x": 0, "y": 0, "s": "none", "t": token, "u": username, "a": "dead"})
-    elif fire:
+    elif fire and me.gun_cooldown_timer <= 0:
+        # we want to and can fire
+        me.gun_cooldown_timer = me.gun_cooldown
+        me.firing = True
+        laser_sound.play()
 
-        if me.gun_cooldown_timer <= 0:
-            me.gun_cooldown_timer = me.gun_cooldown
-            me.firing = True
-            laser_sound.play()
-            if not me.walled:
-                if me.aim_dir == "left":
-                    me.dir = "right"
-                elif me.aim_dir == "right":
-                    me.dir = "left"
-                elif me.aim_dir == "up":
-                    me.dir = "down"
-                elif me.aim_dir == "down":
-                    me.dir = "up"
-                elif me.aim_dir == "down-left":
-                    me.dir = "up-right"
-                elif me.aim_dir == "down-right":
-                    me.dir = "up-left"
-                elif me.aim_dir == "up-left":
-                    me.dir = "down-right"
-                elif me.aim_dir == "up-right":
-                    me.dir = "down-left"
-
-                    
+        if not me.walled:
+            # if we shoot in mid-air go flying off in the opposite direction
+            # TODO: use degrees!!
+            if me.aim_dir == "left":
+                me.dir = "right"
+            elif me.aim_dir == "right":
+                me.dir = "left"
+            elif me.aim_dir == "up":
+                me.dir = "down"
+            elif me.aim_dir == "down":
+               me.dir = "up"
+            # send my location and the direction that I'm shooting in
             data = server.sendToServer({"x": me.rect.x, "y": me.rect.y, "s": me.aim_dir, "t": token, "u": username, "a": "none"})
-        else:
-            data = server.sendToServer({"x": me.rect.x, "y": me.rect.y, "s": "none", "t": token, "u": username, "a": "none"})
     else:
+        # not shooting so just send my position
         me.fired = False
         data = server.sendToServer({"x": me.rect.x, "y": me.rect.y, "s": "none", "t": token, "u": username, "a": "none"})
     return data
@@ -172,10 +185,16 @@ def drawMap(wall_list):
     wall_list.add(sprites.Wall(450, 150, 10, 90))
     wall_list.add(sprites.Wall(390, 150, 60, 10))
 
-
+"""
+takes a Player sprite object
+sets that object's .dead attribute to False and spawns it randomly(-ish)
+"""
 def spawn(player):
-    ran = random.random()
+    # set the player to alive
     player.dead = False
+    # make a random number
+    ran = random.random()
+    # spawn player at a spawn point chosen based on ran
     if ran < 0.25:
         player.rect.x = 40
         player.rect.y = 120
@@ -188,12 +207,11 @@ def spawn(player):
     else:
         player.rect.x = 430
         player.rect.y = 170
+    return True
 
 
-
-
+# prompt for username, colour and server to connect to
 # TODO: Add GUI menus for player name and server ip:port
-        
 server_ip = raw_input("Server IP/hostname? ")
 server_port = raw_input("Server port? ")
 server = nethelpers.server(server_ip, server_port)
@@ -207,10 +225,12 @@ while True:
     print "Choose: yellow, orange, pink, blue, red, cyan or green."
 
 
-    
+# initialize pygame
 pygame.mixer.pre_init(44100, -16, 1, 512)
 pygame.init()
 pygame.mixer.init()
+
+# set up a basic font object to use
 font=pygame.font.Font(None,18)
 # Set the width and height of the screen [width, height]
 size = (640, 480)
