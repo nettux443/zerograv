@@ -1,13 +1,5 @@
  * implement degrees instead of direction strings
 
- * add a client-side colours.py module with alpha and non-alpha classes
-   Use:
-   import colours
-   colours.alpha.red
-   colours.nonalpha.blue
-
-   RED = (255, 0, 0)
-
  * implement rotation + gradually rotate when floating to land on feet
 
  * rejig controls. Don't use space instead use arrows and c, v
