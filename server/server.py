@@ -13,6 +13,10 @@ def listenForClients(sock):
         # wait for a new client
         # when a client connects create a socket for responding to it called client
         client, address = sock.accept()
+        # set the timeout to 5 seconds
+        # If a client doesn't talk for 5 seconds it is deemed dead
+        # and will be disconected
+        client.settimeout(5)
         # start a new thread for the client to listen for
         # incoming messages and send back responses
         threading.Thread( target = listenToClient, args = (client,address, clients) ).start()
@@ -78,10 +82,6 @@ def main(host, port):
     # create the listening socket
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    # set the timeout to 5 seconds
-    # If a client doesn't talk for 5 seconds it is deemed dead
-    # and will be disconected
-    sock.settimeout(5)
     # bind the socket to the specified port and all interfaces
     sock.bind((host, port))
     sock.listen(5)

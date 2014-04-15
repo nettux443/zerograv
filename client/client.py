@@ -6,21 +6,9 @@ import sprites
 import json
 import random
 import os
+import colours
 
 from math import atan2, degrees, pi, sin, cos
-
-BLACK    = (   0,   0,   0, 255)
-GREY     = ( 128, 128, 128, 255)
-WHITE    = ( 255, 255, 255, 255)
-BLUE     = (   0,   0, 255, 255)
-CYAN     = (   0, 255, 255, 255)
-GREEN    = (   0, 255,   0, 255)
-RED      = ( 255,   0,   0, 255)
-PURPLE   = ( 128,   0, 128, 255)
-PINK     = ( 255,   0, 255, 255)
-ORANGE   = ( 255, 165,   0, 255)
-YELLOW   = ( 255, 255,   0, 255)
-TRANSPARENT = (0,0,0,0)
 
 """
 Takes a colour string
@@ -28,19 +16,19 @@ returns the corresnponding colour constant
 """
 def colourize(colour_string):
     if colour == "yellow":
-        return  YELLOW
+        return  colours.alpha.YELLOW
     elif colour == "blue":
-        return  BLUE
+        return  colours.alpha.BLUE
     elif colour == "cyan":
-        return  CYAN  
+        return  colours.alpha.CYAN  
     elif colour == "red":
-        return  RED
+        return  colours.alpha.RED
     elif colour == "orange":
-        return  ORANGE
+        return  colours.alpha.ORANGE
     elif colour == "pink":
-        return  PINK
+        return  colours.alpha.PINK
     elif colour == "green":
-        return  GREEN
+        return  colours.alpha.GREEN
     # the given colour couldn't be matched
     return False
 
@@ -433,8 +421,8 @@ while not done:
     """
 
     # clear the screen to white
-    window.fill(BLACK)
-    screen.fill(GREY)
+    window.fill(colours.nonalpha.BLACK)
+    screen.fill(colours.alpha.GREY)
                 
     bullet_list.draw(screen)
 
@@ -444,11 +432,11 @@ while not done:
     for player_group in player_dict.values():
         if not player_group.sprite.dead:
             player_group.draw(screen)
-            screen.blit(font.render(player_group.sprite.name, 1,BLACK), (player_group.sprite.rect.x - 6, player_group.sprite.rect.y - 15))
+            screen.blit(font.render(player_group.sprite.name, 1, colours.alpha.BLACK), (player_group.sprite.rect.x - 6, player_group.sprite.rect.y - 15))
 
     for bullet in bullet_list:        
         # tidy up bullets that have left the screen
-        pygame.draw.circle(dark.image, TRANSPARENT, (bullet.rect.x + 6, bullet.rect.y + 6), 80)
+        pygame.draw.circle(dark.image, colours.alpha.TRANSPARENT, (bullet.rect.x + 6, bullet.rect.y + 6), 80)
         if bullet.rect.y < -10 or bullet.rect.x < -200:
             bullet_list.remove(bullet)
         if bullet.rect.y > 490 or bullet.rect.x > 900:
@@ -461,7 +449,7 @@ while not done:
     
     if me.gun_cooldown_timer <= 0:
         # print ready in top left corner when we can fire
-        window.blit(font.render("Ready", 1,DARK_GREEN), (10, 10))
+        window.blit(font.render("Ready", 1, colours.alpha.DARK_GREEN), (10, 10))
     
     # update the screen
     pygame.display.flip()

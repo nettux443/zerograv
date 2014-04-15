@@ -19,7 +19,7 @@ class server(object):
     def sendToServer(self, input_dict):
         # set the buffer size
         size = 1024
-        convert the dictionary into a json string and send it to the server
+        # convert the dictionary into a json string and send it to the server
         self.sock.send(json.dumps(input_dict))
         # read and return the servver's response
         data = self.sock.recv(size)
