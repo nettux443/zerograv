@@ -1,4 +1,4 @@
-from math import atan2, degrees, pi, sin, cos
+from math import atan2, degrees, radians, pi, sin, cos, tan, sqrt
 
 """
 Takes two coordinates
@@ -13,14 +13,45 @@ def vectDegs(x1,y1,x2,y2):
     return int(round(degs))
 
 """
-Takes a start cooridinate and an angle.
+Takes a start cooridinate and an angle read anticlockwise from the x axis
 Returns the x and y deltas for a single step in the given angle
 """
-def vectorStep(x0, y0, degs):
-    theta = pi/6
-    r = 1.0
-    deltax = r*cos(theta)
-    deltay = r*sin(theta)
+def vectorStep(x, y, degs):
+    print "degrees: ", degs
+    if degs < 0:
+        return {"x": 0, "y": 0}
+    real_degs = degs
+    while degs >= 90:
+        degs -= 90 
+    m = tan(radians(degs))
+    deltax = sqrt(1/(m**2+1))
+    deltay = (m * deltax)
+
+    if real_degs < 90:
+        # we are in top right quadrant
+        if deltax > 0:
+            deltax *= -1
+        if deltay > 0:
+            deltay *= -1
+        oldx = deltax
+        deltax = deltay
+        deltay = oldx
+        
+    elif real_degs < 180:
+        # we are in bottom right quadrant
+        if deltax > 0:
+            deltax *= -1
+    elif real_degs < 270:
+        # we are in bottom left quadrant
+        oldy = deltay
+        if deltay != 0:
+            deltax *= -1
+        deltay = deltax
+        deltax = oldy
+    elif real_degs < 360:
+        # we are in top left quadrant
+        deltay = deltay
+    else:
+        return {"x": 0, "y": 0}
+
     return {"x": deltax, "y": deltay}
-
-
