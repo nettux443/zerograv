@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import os, sys
-sys.path.append(os.path.abspath(os.path.join("..", "shared_modules")))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "shared_modules")))
 
 import pygame
 import nethelpers
@@ -43,26 +43,26 @@ TODO: use degrees here!!
 """
 def getDir(keys):
     # assume that we aren't moving to begin with
-    dir = "still"
+    dir = -1
     # if we are press an arrow key, move that way
     if keys[pygame.K_LEFT]:
-        dir = "left"
+        dir = 90
     if keys[pygame.K_RIGHT]:
         # if we are press right and left just stay still
-        if dir == "left":
-            dir = "still"
+        if dir == 90:
+            dir = -1
         else:
-            dir = "right"
+            dir = 270
     if keys[pygame.K_UP]:
-        if dir == "down":
-            dir = "still"
+        if dir == 180:
+            dir = -1
         else:
-            dir = "up"
+            dir = 0
     if keys[pygame.K_DOWN]:
-        if dir == "up":
-            dir = "still"
+        if dir == 0:
+            dir = -1
         else:
-            dir = "down"
+            dir = 180
     return dir
 
 """
@@ -72,15 +72,15 @@ TODO: use degress here!!!!!
 """
 def getAimDir(keys):
     # initialise to still
-    dir = "still"
+    dir = -1
     if keys[pygame.K_s]:
-        dir = "down"
+        dir = 180
     if keys[pygame.K_w]:
-        dir = "up"
+        dir = 0
     if keys[pygame.K_a]:
-        dir = "left"
+        dir = 90
     if keys[pygame.K_d]:
-        dir = "right"
+        dir = 270
     return dir
 
 
@@ -102,14 +102,11 @@ def getServerData(me, laser_sound):
         if not me.walled:
             # if we shoot in mid-air go flying off in the opposite direction
             # TODO: use degrees!!
-            if me.aim_dir == "left":
-                me.dir = "right"
-            elif me.aim_dir == "right":
-                me.dir = "left"
-            elif me.aim_dir == "up":
-                me.dir = "down"
-            elif me.aim_dir == "down":
-               me.dir = "up"
+            if me.aim_dir < 180:
+                me.dir = me.aim_dir + 180
+            else:
+                me.dir = me.aim_dir - 180
+
             # send my location and the direction that I'm shooting in
         data = server.sendToServer({"x": me.rect.x, "y": me.rect.y, "s": me.aim_dir, "t": token, "u": username, "a": "none"})
     else:
@@ -275,7 +272,7 @@ while not done:
     # if no aim commands recieved keep the old look_dir
     # TODO: use degrees!!!!!
     dir = getAimDir(keys)
-    if dir != "still":
+    if dir > -1 and dir < 360:
         me.aim_dir = dir
 
 
@@ -287,34 +284,14 @@ while not done:
     hit_list = pygame.sprite.spritecollide(me, wall_list, False)
     if len(hit_list) > 0:
         for hit in hit_list:
-            if me.look_dir == "left":
+            if me.look_dir == 90:
                 me.rect.x = hit.rect.right
-            elif me.look_dir == "right":
+            elif me.look_dir == 270:
                 me.rect.x = hit.rect.left - 20
-            elif me.look_dir == "up":
+            elif me.look_dir == 0:
                 me.rect.y = hit.rect.bottom
-            elif me.look_dir == "down":
+            elif me.look_dir == 180:
                 me.rect.y = hit.rect.top - 20
-            elif me.look_dir == "up-right":
-                if me.rect.y >= hit.rect.bottom - 4:
-                    me.rect.y = hit.rect.bottom
-                else:
-                    me.rect.x = hit.rect.left - 20
-            elif me.look_dir == "up-left":
-                if me.rect.y >= hit.rect.bottom - 4:
-                    me.rect.y = hit.rect.bottom
-                else:
-                    me.rect.x = hit.rect.right
-            elif me.look_dir == "down-right":
-                if me.rect.y <= hit.rect.top - 16:
-                    me.rect.y = hit.rect.top - 20
-                else:
-                    me.rect.x = hit.rect.left - 20
-            elif me.look_dir == "down-left":
-                if me.rect.y <= hit.rect.top - 16:
-                    me.rect.y = hit.rect.top - 20
-                else:
-                    me.rect.x = hit.rect.right
 
     # shift bullets
     bullet_list.update()
@@ -357,16 +334,7 @@ while not done:
                         player.firing = True
                         if player.name !=  me.name:
                             laser_sound.play()
-                        if data[player.name]['s'] == "up-left":
-                            bullet_list.add(sprites.Bullet(data[player.name]['s'], data[player.name]['x'] + 10 - 10, data[player.name]['y'] + 10 - 10))
-                        elif data[player.name]['s'] == "down-left":
-                            bullet_list.add(sprites.Bullet(data[player.name]['s'], data[player.name]['x'] + 10 - 10, data[player.name]['y'] + 10 + 10))
-                        elif data[player.name]['s'] == "up-right":
-                            bullet_list.add(sprites.Bullet(data[player.name]['s'], data[player.name]['x'] + 10 + 10, data[player.name]['y'] + 10 - 10))
-                        elif data[player.name]['s'] == "down-right":
-                            bullet_list.add(sprites.Bullet(data[player.name]['s'], data[player.name]['x'] + 10 + 10, data[player.name]['y'] + 10 + 10))
-                        else:
-                            bullet_list.add(sprites.Bullet(data[player.name]['s'], data[player.name]['x'] + 10, data[player.name]['y'] + 10))
+                        bullet_list.add(sprites.Bullet(data[player.name]['s'], data[player.name]['x'] + 10, data[player.name]['y'] + 10))
 
     # get number of living players
     living_count = 0

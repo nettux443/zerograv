@@ -3,10 +3,10 @@ import nethelpers
 import sprites
 import json
 import colours
+import os, sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "shared_modules")))
+import vectors
 from math import atan2, degrees, pi, sin, cos
-
-
-
 
 class Bullet(pygame.sprite.Sprite):
     """ This class represents the bullet . """
@@ -27,14 +27,19 @@ class Bullet(pygame.sprite.Sprite):
     def update(self):
         self.image.fill(self.colour)
         """ Move the bullet. """
-        if self.dir == "right":
+        """
+        if self.dir == 270:
             self.rect.x += 20
-        elif self.dir == "left":
+        elif self.dir == 90:
             self.rect.x -= 20
-        elif self.dir == "up":
+        elif self.dir == 0:
             self.rect.y -= 20
-        elif self.dir == "down":
+        elif self.dir == 180:
             self.rect.y += 20
+        """
+        delta = vectors.vectorStep(self.rect.x, self.rect.y, dir)
+        self.rect.x += round((20 * delta['x']))
+        self.rect.y += round((20 * delta['y']))
 
 class Player(pygame.sprite.Sprite):
     """ This class represents the Player. """
@@ -74,13 +79,13 @@ class Player(pygame.sprite.Sprite):
         # TODO: DEGREEESSS!!!
         if self.dir != "still":
             self.look_dir = self.dir
-            if self.dir == "left":
+            if self.dir == 90:
                 self.rect.x -= 6
-            elif self.dir == "right":
+            elif self.dir == 270:
                 self.rect.x += 6
-            elif self.dir == "down":
+            elif self.dir == 180:
                 self.rect.y += 6
-            elif self.dir == "up":
+            elif self.dir == 0:
                 self.rect.y -= 6
 
         # die if off the screen

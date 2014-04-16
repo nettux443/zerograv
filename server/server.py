@@ -1,6 +1,6 @@
 #!/usr/bin/python
 import os, sys
-sys.path.append(os.path.abspath(os.path.join("..", "shared_modules")))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "shared_modules")))
 
 import socket
 import threading
