@@ -17,6 +17,7 @@ Takes a start cooridinate and an angle read anticlockwise from the x axis
 Returns the x and y deltas for a single step in the given angle
 """
 def vectorStep(x, y, degs):
+    print "degrees: ", degs
     if degs < 0:
         return {"x": 0, "y": 0}
     real_degs = degs
@@ -28,9 +29,11 @@ def vectorStep(x, y, degs):
 
     if real_degs < 90:
         # we are in top right quadrant
-        oldx = deltax
-        if deltay != 0:
+        if deltax > 0:
+            deltax *= -1
+        if deltay > 0:
             deltay *= -1
+        oldx = deltax
         deltax = deltay
         deltay = oldx
         

@@ -17,7 +17,7 @@ class Bullet(pygame.sprite.Sprite):
         self.owner = owner
         self.colour = colour
         self.image = pygame.Surface([12, 12])
-        self.dir = dir
+        self.dir = int(dir)
         self.image.fill(self.colour)
         self.rect = self.image.get_rect()
         self.rect.x = x - 6
@@ -27,7 +27,6 @@ class Bullet(pygame.sprite.Sprite):
     def update(self):
         self.image.fill(self.colour)
         """ Move the bullet. """
-        """
         if self.dir == 270:
             self.rect.x += 20
         elif self.dir == 90:
@@ -36,8 +35,7 @@ class Bullet(pygame.sprite.Sprite):
             self.rect.y -= 20
         elif self.dir == 180:
             self.rect.y += 20
-        """
-        delta = vectors.vectorStep(self.rect.x, self.rect.y, dir)
+        delta = vectors.vectorStep(self.rect.x, self.rect.y, self.dir)
         self.rect.x += round((20 * delta['x']))
         self.rect.y += round((20 * delta['y']))
 
@@ -59,9 +57,9 @@ class Player(pygame.sprite.Sprite):
         self.dead = False
         self.firing = False
         self.fired = False
-        self.dir = "still"
-        self.look_dir = "right"
-        self.aim_dir = "right"
+        self.dir = -1
+        self.look_dir = 270
+        self.aim_dir = 270
         self.walled = True
         self.gun_cooldown_timer = 0
         self.gun_cooldown = 3 * 30

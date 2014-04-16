@@ -334,7 +334,8 @@ while not done:
                         player.firing = True
                         if player.name !=  me.name:
                             laser_sound.play()
-                        bullet_list.add(sprites.Bullet(data[player.name]['s'], data[player.name]['x'] + 10, data[player.name]['y'] + 10))
+                        print data[player.name]['s']
+                        bullet_list.add(sprites.Bullet(int(data[player.name]['s']), data[player.name]['x'] + 10, data[player.name]['y'] + 10))
 
     # get number of living players
     living_count = 0
